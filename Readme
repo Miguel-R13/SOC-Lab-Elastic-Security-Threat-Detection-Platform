@@ -1,0 +1,225 @@
+🛡️ Cómo construí un SOC desde cero usando Elasticsearch + Kibana
+
+📌 Introducción
+
+El objetivo de este proyecto fue diseñar e implementar un SOC (Security Operations Center) funcional desde cero, basado en la Elastic Stack, incorporando capacidades de:
+
+SIEM
+EDR
+NSM (Network Security Monitoring)
+Threat Intelligence (CTI)
+Machine Learning para detección de comportamiento
+Case Management (IRIS)
+Observabilidad de infraestructura
+
+Todo el entorno fue desplegado en un laboratorio utilizando Docker como base de orquestación de componentes auxiliares.
+
+🏗️ 1. Arquitectura del SOC
+
+El SOC se construyó sobre el siguiente stack principal:
+
+🔹 Elastic Stack
+Elasticsearch → Motor de indexación y correlación
+Kibana → Visualización, SIEM y análisis
+Fleet Server → Control de agentes
+Elastic Agent → Telemetría y seguridad en endpoints
+🔹 Infraestructura de despliegue
+Docker → Despliegue de servicios auxiliares (MISP, IRIS, etc.) y también del propio Elastic + Kibana.
+🧠 Fleet Server (Core de gestión)
+
+El Fleet Server actúa como el control del SOC:
+
+Gestión centralizada de Elastic Agents
+Aplicación de políticas de seguridad
+Orquestación de telemetría
+Control del ciclo de vida de agentes
+
+🧩 Elastic Agent (Sensor unificado). El Elastic Agent se utilizó como sensor principal en endpoints:
+
+Recolección de logs
+Métricas del sistema
+Telemetría de seguridad
+Comunicación con Fleet Server
+Aplicación de políticas EDR
+
+🖥️ 2. Endpoint Security (EDR)
+📜 Política EDR: EDR_Policy
+
+Se diseñó una política específica para entornos Windows orientada a visibilidad completa del endpoint.
+
+📊 Fuentes de datos habilitadas
+Windows Event Logs
+Security Logs
+Application Logs
+System Logs
+Windows Defender Events
+Authentication Events
+System startup / shutdown
+Login / logout events
+⚙️ Actividades monitorizadas
+Ejecución de procesos (.exe)
+PowerShell activity
+Cambios en el sistema operativo
+Persistencia y modificaciones locales
+🛡️ Elastic Defend (EDR activo)
+
+Se integró Elastic Defend como capa EDR con capacidades de:
+
+Detección de malware
+Prevención de amenazas
+Telemetría avanzada del endpoint
+Respuesta ante incidentes
+Soporte forense
+
+🧪 Vulnerability Management
+
+Se incorporó inteligencia de vulnerabilidades basada en:
+
+CISA Known Exploited Vulnerabilities (KEV)
+Esto permite identificar activos expuestos a vulnerabilidades activamente explotadas.
+
+🧪 Validación del despliegue
+
+Se enroló un endpoint Windows de laboratorio para validar:
+
+Ingesta de logs
+Telemetría de sistema
+Detecciones EDR
+Generación de alertas en Kibana
+
+🌐 3. Network Security Monitoring (NSM)
+
+Se habilitó captura y análisis de tráfico mediante Network Packet Capture.
+
+📡 Protocolos monitorizados (ejemplos)
+DNS
+DHCP
+HTTP
+TLS
+ICMP
+MySQL
+
+👉 La activación de protocolos se ajusta según criticidad y consumo de recursos.
+
+🤖 4. Machine Learning & Detección de comportamiento
+
+Se integraron modelos de detección basados en comportamiento:
+
+🔍 Casos de uso
+🔁 Lateral Movement Detection
+🔐 Privileged Access Detection
+📤 Data Exfiltration Detection
+
+📌 Ejemplos de anomalías:
+Transferencias masivas fuera de horario habitual
+Actividad en fines de semana o festivos
+Cambios bruscos en patrones de acceso
+
+🧬 5. Threat Intelligence (CTI)
+🔗 Integración con Abuse.ch
+
+Se integró inteligencia de amenazas mediante API:
+
+MalwareBazaar
+ThreatFox
+Feeds de malware URLs
+SSL Blacklists
+IOC Feeds
+
+📌 Retención de IOC: 30 días
+
+🧠 Threat Intelligence Utilities
+
+Se centralizó la visualización y análisis de IOC para enriquecer eventos de seguridad.
+
+🧩 6. Integración con MISP
+
+Se desplegó MISP (Malware Information Sharing Platform).
+
+🎯 Objetivos
+📥 Consumo de inteligencia
+IOC
+TTPs
+Campañas
+Malware indicators
+📤 Compartición de inteligencia
+Publicación de eventos entre organizaciones
+🏛️ Gobierno de la información
+L1 SOC → Creación y documentación de eventos
+L2 SOC → Análisis y enriquecimiento
+L3 / Threat Intel → Validación y publicación de inteligencia
+🧾 Ejemplo de contexto
+Intento de SQL Injection
+Origen: infraestructura cloud (Alibaba Cloud)
+IOC asociados + evidencia técnica
+🔗 Integración Elastic ↔ MISP
+
+Conexión bidireccional mediante API para:
+Enriquecimiento de alertas
+Sincronización de IOC
+Correlación de incidentes
+
+🚨 7. Detección y reglas de seguridad
+📊 Elastic Security Rules
+
+Se cargaron aproximadamente:
+1.849 reglas predefinidas
+
+📌 Importante:
+No todas las reglas fueron activadas. Se realizó un proceso de tuning según el entorno.
+
+
+📁 8. Gestión de Incidentes (IRIS)
+
+Se desplegó IRIS Case Management vía Docker.
+
+🧾 Capacidades
+Gestión de incidentes
+Registro de evidencias
+Correlación de eventos
+Tracking de investigación
+Documentación forense
+📚 Beneficio clave
+
+Trazabilidad completa del ciclo de vida de un incidente:
+
+Detección → Análisis → Contención → Lecciones aprendidas
+📊 9. Observabilidad y monitorización
+🌐 Elastic Synthetics
+
+Casos de uso:
+
+Monitorización de disponibilidad web
+Certificados SSL/TLS
+Alertas de expiración
+Health-check de APIs
+🖥️ Infraestructura monitorizada
+Hosts
+CPU / RAM / Disco
+Redes
+Kubernetes (pods, nodos)
+Cloud (AWS)
+Aplicaciones y APIs
+
+🐧 10. Escalabilidad multi-SO
+
+El SOC está diseñado para extenderse a:
+
+Linux
+Logs de sistema
+Auditoría (auditd)
+Métricas de rendimiento
+Telemetría de seguridad
+📌 Conclusión
+
+Este proyecto demuestra la construcción de un SOC completo de nivel enterprise, combinando:
+
+SIEM (Elastic Security)
+EDR (Elastic Defend)
+NSM (Packet Capture)
+CTI (Abuse.ch + MISP)
+ML detections
+Case management (IRIS)
+Observabilidad completa
+
+Todo ello integrado en una arquitectura escalable, modular y orientada a detección avanzada.
