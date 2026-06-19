@@ -34,13 +34,15 @@ Aplicación de políticas de seguridad
 Orquestación de telemetría
 Control del ciclo de vida de agentes
 
-🧩 Elastic Agent (Sensor unificado). El Elastic Agent se utilizó como sensor principal en endpoints:
+🧩 Elastic Agent: se utilizó como sensor principal en endpoints:
 
 Recolección de logs
 Métricas del sistema
 Telemetría de seguridad
 Comunicación con Fleet Server
 Aplicación de políticas EDR
+
+(Capturas/fleet-agent-EDR-policy.png)
 
 🖥️ 2. Endpoint Security (EDR)
 📜 Política EDR: EDR_Policy
