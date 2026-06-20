@@ -231,5 +231,7 @@ Observabilidad completa
 
 Todo ello integrado en una arquitectura escalable, modular y orientada a detección avanzada.
 
-![Elastic Stack](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/Capturas/elastic-kibana.png)
+### 📊 Panel de Control: Elastic Kibana
+Aquí puedes ver la visualización de los logs recolectados desde nuestros endpoints.
+![Panel de Elastic Kibana](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/elastic-kibana.png)
 
