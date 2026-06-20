@@ -1,5 +1,8 @@
 🛡️ Cómo construí un SOC desde cero usando Elasticsearch + Kibana
 
+### 📊 Panel de Control: Elastic Kibana
+![Panel de Elastic Kibana](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/elastic-kibana.png)
+
 📌 Introducción
 
 El objetivo de este proyecto fue diseñar e implementar un SOC (Security Operations Center) funcional desde cero, basado en Elastic Stack, incorporando capacidades de:
@@ -237,6 +240,5 @@ Observabilidad completa
 
 Todo ello integrado en una arquitectura escalable, modular y orientada a detección avanzada.
 
-### 📊 Panel de Control: Elastic Kibana
-![Panel de Elastic Kibana](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/elastic-kibana.png)
+
 
