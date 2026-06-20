@@ -1,244 +1,334 @@
-🛡️ Cómo construí un SOC desde cero usando Elasticsearch + Kibana
+# 🛡️ SOC Lab: Elastic Security Threat Detection Platform
 
-### 📊 Panel de Control: Elastic Kibana
+> Construcción de un Security Operations Center completo desde cero, utilizando Elastic Stack como núcleo central de detección y respuesta. Este laboratorio documenta mis decisiones arquitectónicas, el proceso de configuración y los casos de uso reales validados en un entorno controlado.
+
+---
+
+## 📌 Por qué construí este laboratorio
+
+El objetivo no era simplemente instalar herramientas: quería entender cómo funciona un SOC real por dentro. Para eso necesitaba un entorno donde pudiese generar tráfico malicioso, detectarlo, investigarlo y documentar el ciclo completo de respuesta a incidentes.
+
+La stack elegida —Elastic SIEM + EDR + NSM + CTI + ML— refleja lo que se usa en entornos enterprise. Cada componente fue seleccionado con criterio, no instalado por defecto.
+
+---
+
+## 🏗️ Arquitectura del SOC
+
+El laboratorio está desplegado completamente en **Docker**, lo que permite reproducibilidad total y facilidad de escalado. La arquitectura se organiza en capas funcionales:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     CAPA DE VISUALIZACIÓN                   │
+│              Kibana SIEM │ Dashboards │ Alertas             │
+├─────────────────────────────────────────────────────────────┤
+│                   CAPA DE CORRELACIÓN                       │
+│         Elasticsearch (indexación + búsqueda)               │
+│         Elastic ML (detección de anomalías)                 │
+├──────────────┬──────────────────────┬───────────────────────┤
+│   ENDPOINTS  │       RED            │   THREAT INTEL        │
+│ Elastic Agent│  Network Packet      │  Abuse.ch API         │
+│ Elastic EDR  │  Capture (NSM)       │  MISP Platform        │
+├──────────────┴──────────────────────┴───────────────────────┤
+│                   GESTIÓN DE INCIDENTES                     │
+│                   IRIS Case Management                      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Stack tecnológico principal
+
+| Componente | Función |
+|---|---|
+| **Elasticsearch** | Motor de indexación, correlación y búsqueda de logs |
+| **Kibana** | Visualización, SIEM y gestión de reglas de detección |
+| **Fleet Server** | Control centralizado de agentes, políticas y ciclo de vida |
+| **Elastic Agent** | Sensor de telemetría en endpoints (logs, métricas, seguridad) |
+| **Elastic Defend** | Capa EDR activa: detección, prevención y respuesta |
+| **MISP** | Plataforma de intercambio de inteligencia de amenazas |
+| **IRIS** | Gestión estructurada de incidentes (case management) |
+
+---
+
+## 🖥️ Panel de Control: Kibana SIEM
+
 ![Panel de Elastic Kibana](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/elastic-kibana.png)
 
-📌 Introducción
+---
 
-El objetivo de este proyecto fue diseñar e implementar un SOC (Security Operations Center) funcional desde cero, basado en Elastic Stack, incorporando capacidades de:
+## 🧠 Fleet Server: núcleo de gestión de agentes
 
-SIEM
-EDR
-NSM (Network Security Monitoring)
-Threat Intelligence (CTI)
-Machine Learning para detección de comportamiento
-Case Management (IRIS)
-Observabilidad de infraestructura
+El Fleet Server es el punto de control de toda la telemetría del laboratorio. Desde aquí gestiono:
 
-Todo el entorno fue desplegado en un laboratorio utilizando Docker.
+- El **ciclo de vida de los Elastic Agents** desplegados en los endpoints
+- La **aplicación de políticas de seguridad** de forma centralizada
+- La **orquestación de la telemetría** hacia Elasticsearch
 
-🏗️ 1. Arquitectura del SOC
+Optar por Fleet en lugar de gestión manual de agentes fue una decisión deliberada: refleja cómo se opera en entornos enterprise con decenas o cientos de endpoints.
 
-El SOC se construyó sobre el siguiente stack principal:
-
-🔹 Elastic Stack
-Elasticsearch → Motor de indexación y correlación
-Kibana → Visualización, SIEM y análisis
-Fleet Server → Control de agentes
-Elastic Agent → Telemetría y seguridad en endpoints
-
-🔹 Infraestructura de despliegue
-Docker → Despliegue de servicios auxiliares (MISP, IRIS, etc.) y también del propio Elastic + Kibana.
-
-🧠 Fleet Server (Core de gestión)
-El Fleet Server actúa como el control del SOC:
-
-Gestión centralizada de Elastic Agents
-Aplicación de políticas de seguridad
-Orquestación de telemetría
-Control del ciclo de vida de agentes
-
-### 🧠 Fleet Server
 ![Fleet Server](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/fleet-server.png)
 
-🧩 Elastic Agent: se utilizó como sensor principal en endpoints:
+---
 
-Recolección de logs
-Métricas del sistema
-Telemetría de seguridad
-Comunicación con Fleet Server
-Aplicación de políticas EDR
+## 🛡️ Endpoint Security (EDR)
 
-### 🧩 Elastic Agent - EDR Policy
+### Política EDR diseñada para entornos Windows
+
+Diseñé una política específica orientada a **máxima visibilidad del endpoint** sin sacrificar rendimiento. Las fuentes de datos habilitadas incluyen:
+
+- Windows Event Logs (Security, Application, System)
+- Windows Defender Events
+- Authentication Events (login/logout, startup/shutdown)
+- Ejecución de procesos (.exe) y actividad de PowerShell
+- Modificaciones en el sistema operativo y mecanismos de persistencia
+
+La selección no fue aleatoria: estas fuentes cubren las técnicas más comunes del marco **MITRE ATT&CK** para acceso inicial, ejecución y persistencia.
+
 ![Elastic Agent - EDR Policy](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/fleet-agent-EDR-policy.png)
 
-🖥️ 2. Endpoint Security (EDR)
-📜 Política EDR: EDR_Policy
+### Elastic Defend: EDR activo
 
-Se diseñó una política específica para entornos Windows orientada a visibilidad completa del endpoint.
+**Elastic Defend** funciona como la capa de protección activa del endpoint, con capacidades de:
 
-📊 Fuentes de datos habilitadas
-Windows Event Logs
-Security Logs
-Application Logs
-System Logs
-Windows Defender Events
-Authentication Events
-System startup / shutdown
-Login / logout events
-⚙️ Actividades monitorizadas
-Ejecución de procesos (.exe)
-PowerShell activity
-Cambios en el sistema operativo
-Persistencia y modificaciones locales
-🛡️ Elastic Defend (EDR activo)
+- Detección y prevención de malware en tiempo real
+- Telemetría avanzada a nivel de sistema operativo
+- Soporte forense para análisis post-incidente
+- Respuesta activa ante amenazas confirmadas
 
-Se integró Elastic Defend como capa EDR con capacidades de:
-
-Detección de malware
-Prevención de amenazas
-Telemetría avanzada del endpoint
-Respuesta ante incidentes
-Soporte forense
-
-### 🛡️ EDR Policy
 ![EDR Policy](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/EDR_Policy.png)
 
-🧪 Vulnerability Management
+### Vulnerability Management
 
-Se incorporó inteligencia de vulnerabilidades basada en:
+Integré **CISA Known Exploited Vulnerabilities (KEV)** como fuente de inteligencia de vulnerabilidades. Esto permite identificar activos en el laboratorio expuestos a CVEs que están siendo explotados activamente en entornos reales, no solo teóricamente.
 
-CISA Known Exploited Vulnerabilities (KEV)
-Esto permite identificar activos expuestos a vulnerabilidades activamente explotadas.
+---
 
-🧪 Validación del despliegue
+## 🌐 Network Security Monitoring (NSM)
 
-Se enroló un endpoint Windows de laboratorio para validar:
+Habilité captura y análisis de tráfico de red mediante **Network Packet Capture**, monitorizando protocolos seleccionados por criticidad:
 
-Ingesta de logs
-Telemetría de sistema
-Detecciones EDR
-Generación de alertas en Kibana
+| Protocolo | Razón de monitorización |
+|---|---|
+| DNS | Detección de C2, DNS tunneling, exfiltración |
+| HTTP/TLS | Análisis de tráfico web, certificados sospechosos |
+| DHCP | Identificación de nuevos activos en red |
+| ICMP | Detección de escaneos y pivoting |
+| MySQL | Detección de SQL Injection y accesos anómalos |
 
-🌐 3. Network Security Monitoring (NSM)
+La activación selectiva de protocolos fue una decisión consciente: habilitar todo genera ruido que reduce la calidad de las detecciones.
 
-Se habilitó captura y análisis de tráfico mediante Network Packet Capture.
+---
 
-📡 Protocolos monitorizados (ejemplos)
-DNS
-DHCP
-HTTP
-TLS
-ICMP
-MySQL
+## 🤖 Machine Learning: detección basada en comportamiento
 
-👉 La activación de protocolos se ajusta según criticidad y consumo de recursos.
+En lugar de depender exclusivamente de reglas basadas en firmas, integré los **modelos nativos de Elastic ML** para detección de anomalías en tiempo real. Los casos de uso implementados son:
 
-🤖 4. Machine Learning & Detección de comportamiento
+- **Lateral Movement Detection**: identifica patrones de movimiento lateral inusuales
+- **Privileged Access Detection**: alerta sobre accesos con privilegios fuera del patrón basal
+- **Data Exfiltration Detection**: detecta transferencias masivas de datos, especialmente fuera de horario
 
-Se integraron modelos de detección basados en comportamiento:
+Los modelos aprenden el comportamiento normal del entorno y alertan sobre desviaciones, lo que permite detectar amenazas que no tienen firma conocida.
 
-🔍 Casos de uso
-🔁 Lateral Movement Detection
-🔐 Privileged Access Detection
-📤 Data Exfiltration Detection
+---
 
-📌 Ejemplos de anomalías:
-Transferencias masivas fuera de horario habitual
-Actividad en fines de semana o festivos
-Cambios bruscos en patrones de acceso
+## 🧬 Threat Intelligence (CTI)
 
-🧬 5. Threat Intelligence (CTI)
-🔗 Integración con Abuse.ch
+### Integración con Abuse.ch
 
-Se integró inteligencia de amenazas mediante API:
+Conecté el SOC a las siguientes fuentes de inteligencia mediante API:
 
-MalwareBazaar
-ThreatFox
-Feeds de malware URLs
-SSL Blacklists
-IOC Feeds
+- **MalwareBazaar**: samples de malware activos
+- **ThreatFox**: IOCs (IPs, dominios, URLs maliciosas)
+- **SSL Blacklists**: certificados asociados a infraestructura maliciosa
 
-📌 Retención de IOC: 30 días
+Retención de IOCs: **30 días**, alineada con la frecuencia de rotación de infraestructura de los actores de amenaza.
 
-🧠 Threat Intelligence Utilities
+### MISP: plataforma de intercambio de inteligencia
 
-Se centralizó la visualización y análisis de IOC para enriquecer eventos de seguridad.
+Desplegué **MISP** como plataforma central de CTI, con una arquitectura de gobierno por niveles:
 
-🧩 6. Integración con MISP
+| Nivel | Responsabilidad |
+|---|---|
+| **L1 SOC** | Creación y documentación de eventos |
+| **L2 SOC** | Análisis y enriquecimiento de indicadores |
+| **L3 / Threat Intel** | Validación y publicación de inteligencia |
 
-Se desplegó MISP (Malware Information Sharing Platform).
+La integración bidireccional entre **Elastic ↔ MISP** permite enriquecer alertas automáticamente con IOCs y TTPs conocidos.
 
-🎯 Objetivos
-📥 Consumo de inteligencia
-IOC
-TTPs
-Campañas
-Malware indicators
-📤 Compartición de inteligencia
-Publicación de eventos entre organizaciones
-🏛️ Gobierno de la información
-L1 SOC → Creación y documentación de eventos
-L2 SOC → Análisis y enriquecimiento
-L3 / Threat Intel → Validación y publicación de inteligencia
-🧾 Ejemplo de contexto
-Intento de SQL Injection
-Origen: infraestructura cloud (Alibaba Cloud)
-IOC asociados + evidencia técnica
-🔗 Integración Elastic ↔ MISP
+**Ejemplo práctico documentado**: intento de SQL Injection originado desde infraestructura cloud (Alibaba Cloud), con IOCs asociados y evidencia técnica completa.
 
-Conexión bidireccional mediante API para:
-Enriquecimiento de alertas
-Sincronización de IOC
-Correlación de incidentes
-
-### 🛡️ Inteligencia de Amenazas: MISP
 ![Plataforma MISP](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/misp.png)
 
-🚨 7. Detección y reglas de seguridad
-📊 Elastic Security Rules
+---
 
-Se cargaron aproximadamente:
-1.849 reglas predefinidas
+## 🚨 Estrategia de detección y gestión de reglas
 
-📌 Importante:
-No todas las reglas fueron activadas. Se realizó un proceso de tuning según el entorno.
+### Filosofía: calidad sobre cantidad
 
+Elastic Security incluye aproximadamente **1.849 reglas predefinidas**. Activarlas todas sería el error más común y más costoso en un SOC real: el volumen de alertas generado haría inviable la respuesta y llevaría al equipo a ignorar las notificaciones, un fenómeno conocido como **alert fatigue**.
 
-📁 8. Gestión de Incidentes (IRIS)
+La decisión fue la contraria: partir de cero y construir el conjunto de reglas activas de forma deliberada, táctica a táctica, validando cada una antes de pasar a la siguiente.
 
-Se desplegó IRIS Case Management vía Docker.
+---
 
-🧾 Capacidades
-Gestión de incidentes
-Registro de evidencias
-Correlación de eventos
-Tracking de investigación
-Documentación forense
-📚 Beneficio clave
+### Proceso de selección e implementación
 
-Trazabilidad completa del ciclo de vida de un incidente:
+**Fase 1 — Environment Baseline**
 
-Detección → Análisis → Contención → Lecciones aprendidas
-📊 9. Observabilidad y monitorización
-🌐 Elastic Synthetics
+Antes de activar ninguna regla, documenté el comportamiento legítimo del entorno. Este baseline es la referencia contra la que se mide cada regla de detección — sin él, es imposible distinguir actividad anómala de ruido operacional normal.
 
-Casos de uso:
+Los siguientes elementos fueron mapeados en el endpoint Windows:
 
-Monitorización de disponibilidad web
-Certificados SSL/TLS
-Alertas de expiración
-Health-check de APIs
-🖥️ Infraestructura monitorizada
-Hosts
-CPU / RAM / Disco
-Redes
-Kubernetes (pods, nodos)
-Cloud (AWS)
-Aplicaciones y APIs
+| Elemento | Baseline observado |
+|---|---|
+| **Procesos legítimos** | `explorer.exe`, `svchost.exe`, `lsass.exe`, `services.exe`, `winlogon.exe`, `taskhostw.exe`, `spoolsv.exe` |
+| **Herramientas de administración en uso** | `powershell.exe` (interactivo, sin args codificados), `mmc.exe`, `eventvwr.exe`, `taskmgr.exe` |
+| **Cuentas privilegiadas** | Cuenta de Administrador local — utilizada únicamente durante el despliegue inicial, deshabilitada posteriormente |
+| **Actividad de red** | DNS hacia resolvers conocidos (8.8.8.8, 1.1.1.1), tráfico de Windows Update, sin conexiones laterales entre hosts |
+| **Scheduled tasks** | Únicamente tareas por defecto de Windows (`\Microsoft\Windows\*`) — ninguna tarea personalizada |
+| **Registry Run Keys** | Sin entradas fuera del software estándar de Windows y aplicaciones instaladas |
+| **Creación de servicios** | Ningún servicio nuevo creado tras el despliegue inicial |
+| **Horario de actividad** | Actividad del lab entre 09:00–23:00 — cualquier ejecución de procesos fuera de esta ventana se trata como anómala |
 
-🐧 10. Escalabilidad multi-SO
+Cualquier alerta generada por los procesos o cuentas anteriores bajo condiciones normales fue clasificada como falso positivo y eliminada mediante tuning antes de pasar a la siguiente fase.
 
-El SOC está diseñado para extenderse a:
+**Fase 2 — Priorización por táctica MITRE ATT&CK**
 
-Linux
-Logs de sistema
-Auditoría (auditd)
-Métricas de rendimiento
-Telemetría de seguridad
-📌 Conclusión
+Las reglas se habilitaron por bloques, ordenados por criticidad táctica. La lógica es directa: si el atacante no puede ejecutar código ni establecer persistencia, las tácticas posteriores nunca llegan a ocurrir.
 
-Este proyecto demuestra la construcción de un SOC completo de nivel enterprise, combinando:
+| Prioridad | MITRE Tactic | Razonamiento |
+|---|---|---|
+| 🔴 Crítica | Initial Access, Execution | Punto de entrada del ataque — detección lo más temprana posible |
+| 🔴 Crítica | Persistence | Impide que el atacante sobreviva a un reinicio o cierre de sesión |
+| 🟠 Alta | Privilege Escalation, Defense Evasion | El atacante ya está dentro y está expandiendo capacidades |
+| 🟠 Alta | Lateral Movement | Contención antes de que el compromiso se extienda a otros hosts |
+| 🟡 Media | Command & Control | Detección de comunicaciones salientes hacia infraestructura del atacante |
+| 🟡 Media | Exfiltration | Última línea — si se llega aquí, las capas anteriores ya han fallado |
 
-SIEM (Elastic Security)
-EDR (Elastic Defend)
-NSM (Packet Capture)
-CTI (Abuse.ch + MISP)
-ML detections
-Case management (IRIS)
-Observabilidad completa
+**Fase 3 — Activación y observación**
 
-Todo ello integrado en una arquitectura escalable, modular y orientada a detección avanzada.
+Cada bloque de reglas se activó y se monitorizó durante una ventana de 48-72 horas antes de continuar. Durante ese período, las alertas generadas se clasificaron como verdaderos positivos, falsos positivos recurrentes o ruido estructural del entorno.
 
+**Fase 4 — Tuning documentado**
 
+Cada excepción añadida está justificada por escrito. El criterio fue consistente: una excepción se añade cuando el comportamiento es legítimo, recurrente y verificado, nunca por comodidad. Las excepciones sin documentación son deuda técnica que invalida cualquier auditoría de cumplimiento.
 
+**Fase 5 — Revisión periódica**
+
+Se estableció un ciclo de revisión cada 30 días para incorporar nuevas TTPs publicadas en MITRE ATT&CK, ajustar umbrales según la evolución del entorno y reactivar reglas que anteriormente generaban demasiado ruido pero que ahora tienen contexto suficiente para ser accionables.
+
+---
+
+### Reglas activas por táctica (selección representativa)
+
+| MITRE Tactic | Regla | Técnica |
+|---|---|---|
+| Execution | PowerShell lanzado con flags `-EncodedCommand` o `-Bypass` | T1059.001 |
+| Execution | Proceso hijo inusual generado desde una aplicación de Microsoft Office | T1566.001 |
+| Persistence | Modificación de Registry Run Keys | T1547.001 |
+| Persistence | Servicio de Windows creado por un proceso padre no estándar | T1543.003 |
+| Persistence | Scheduled task creada desde línea de comandos | T1053.005 |
+| Privilege Escalation | Acceso de proceso a memoria de LSASS | T1003.001 |
+| Privilege Escalation | Robo o suplantación de token (Token impersonation) | T1134 |
+| Defense Evasion | Windows Defender manipulado o deshabilitado | T1562.001 |
+| Defense Evasion | Ejecución mediante binarios firmados — LOLBins (`certutil`, `mshta`, `regsvr32`) | T1218 |
+| Lateral Movement | Ejecución remota mediante PsExec o herramientas de administración equivalentes | T1021 |
+| Lateral Movement | Abuso de autenticación Pass-the-Hash / Pass-the-Ticket | T1550.002 |
+| Command & Control | Beaconing regular hacia IPs externas sin hostname asociado | T1071 |
+| Command & Control | Consultas DNS hacia dominios registrados recientemente | T1568 |
+
+> Cada regla activa está mapeada en IRIS con su técnica MITRE correspondiente, el umbral configurado y las excepciones aplicadas con su justificación por escrito.
+
+---
+
+## 📁 Gestión de Incidentes: IRIS Case Management
+
+Desplegué **IRIS-Web** como plataforma de gestión de incidentes, garantizando trazabilidad completa del ciclo de vida de cada alerta:
+
+```
+Detección (SIEM) → Triaje (Kibana) → Investigación (IRIS) → Contención → Cierre
+```
+
+IRIS me permite documentar:
+
+- Evidencias recopiladas durante la investigación
+- Correlación de eventos relacionados
+- Timeline del incidente
+- Métricas de respuesta: **MTTD** (Mean Time to Detect) y **MTTR** (Mean Time to Respond)
+
+---
+
+## 📊 Observabilidad de infraestructura
+
+El SOC también monitoriza su propia salud, no solo las amenazas externas. Los componentes monitorizados incluyen:
+
+- **Hosts**: CPU, RAM, disco de los sistemas del laboratorio
+- **Red**: tráfico y latencia entre componentes
+- **APIs**: health-check de servicios integrados (MISP, IRIS)
+- **Certificados TLS**: alertas de expiración mediante Elastic Synthetics
+
+---
+
+## 🔒 Buenas prácticas implementadas
+
+El laboratorio no solo detecta amenazas, también las aplica en su propia configuración:
+
+| Práctica | Implementación | Framework |
+|---|---|---|
+| **Gestión de secretos** | Variables de entorno (.env), sin hardcoding de credenciales | CIS Controls - Control 6 |
+| **Retención de logs** | Política formal de retención de datos en Elasticsearch | ISO 27001 A.12.4 |
+| **Backup de configuraciones** | Protocolos de backup para índices críticos e IRIS/MISP | NIST CSF - Recover |
+| **Mapeo MITRE ATT&CK** | Cada regla activa documentada contra TTPs reales | MITRE ATT&CK v14 |
+
+---
+
+## 🧪 Caso práctico: análisis de malware y respuesta a incidentes
+
+Para validar la capacidad operativa del entorno, desarrollé un escenario de análisis completo que abarca el ciclo de vida entero de la respuesta a incidentes:
+
+1. **Extracción de Indicadores de Compromiso (IoCs)**
+2. **Análisis estático y dinámico en entorno aislado**
+3. **Correlación con inteligencia de amenazas (MISP + Abuse.ch)**
+4. **Respuesta técnica y mitigación documentada**
+
+📄 [Ver el informe técnico completo →](https://miguel-r13.github.io/)
+
+---
+
+## 📐 Escalabilidad: preparado para Linux
+
+La arquitectura está diseñada para extenderse a endpoints Linux con monitorización de:
+
+- Logs de sistema y auditoría (`auditd`)
+- Métricas de rendimiento del SO
+- Telemetría de seguridad (accesos, procesos, cambios de configuración)
+
+---
+
+## 🗂️ Estructura del repositorio
+
+```
+SOC-Lab-Elastic-Security-Threat-Detection-Platform/
+├── screenshots/                # Capturas de pantalla del entorno
+│   ├── elastic-kibana.png
+│   ├── fleet-server.png
+│   ├── fleet-agent-EDR-policy.png
+│   ├── EDR_Policy.png
+│   └── misp.png
+├── configs/                    # Configuraciones (sin secretos)
+├── rules/                      # Reglas de detección personalizadas
+└── README.md
+```
+
+---
+
+## 🔗 Recursos relacionados
+
+- [Informe técnico: análisis de malware y phishing](https://miguel-r13.github.io/)
+- [MITRE ATT&CK Framework](https://attack.mitre.org/)
+- [Elastic Security Documentation](https://www.elastic.co/guide/en/security/current/index.html)
+- [MISP Project](https://www.misp-project.org/)
+- [IRIS-Web](https://dfir-iris.org/)
+
+---
+
+*Laboratorio construido y documentado por Miguel — Blue Team / SOC Analyst*  
+*Stack: Elastic Stack · MISP · IRIS · Abuse.ch · Docker*
