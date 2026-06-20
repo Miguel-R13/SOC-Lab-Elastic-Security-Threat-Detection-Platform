@@ -44,7 +44,7 @@ Telemetría de seguridad
 Comunicación con Fleet Server
 Aplicación de políticas EDR
 
-(Capturas/fleet-agent-EDR-policy.png)
+![Fleet Agent EDR Policy](./Capturas/fleet-agent-EDR-policy.png)
 
 🖥️ 2. Endpoint Security (EDR)
 📜 Política EDR: EDR_Policy
