@@ -203,6 +203,8 @@ Las reglas se habilitaron por bloques, ordenados por criticidad táctica. La ló
 | 🟡 Media | Command & Control | Detección de comunicaciones salientes hacia infraestructura del atacante |
 | 🟡 Media | Exfiltration | Última línea — si se llega aquí, las capas anteriores ya han fallado |
 
+![Reglas-Elastic](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/reglas.png)
+
 **Fase 3 — Activación y observación**
 
 Cada bloque de reglas se activó y se monitorizó durante una ventana de 48-72 horas antes de continuar. Durante ese período, las alertas generadas se clasificaron como verdaderos positivos, falsos positivos recurrentes o ruido estructural del entorno.
