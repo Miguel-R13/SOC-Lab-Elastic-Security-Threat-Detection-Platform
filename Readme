@@ -44,7 +44,8 @@ Telemetría de seguridad
 Comunicación con Fleet Server
 Aplicación de políticas EDR
 
-![EDR Policy](https://github.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/blob/main/Capturas/EDR_Policy.png?raw=true)
+![EDR Policy](./Capturas/EDR_Policy.png)
+
 
 🖥️ 2. Endpoint Security (EDR)
 📜 Política EDR: EDR_Policy
