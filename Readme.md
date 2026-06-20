@@ -8,7 +8,7 @@
 
 El objetivo no era simplemente instalar herramientas: quería entender cómo funciona un SOC real por dentro. Para eso necesitaba un entorno donde pudiese generar tráfico malicioso, detectarlo, investigarlo y documentar el ciclo completo de respuesta a incidentes.
 
-La stack elegida —Elastic SIEM + EDR + NSM + CTI + ML— refleja lo que se usa en entornos enterprise. Cada componente fue seleccionado con criterio, no instalado por defecto.
+La stack elegida ElasticSearch + Kibana como SIEM/SOC. Y desde ahí comencé a crear mi EDR + NSM + CTI + ML. Cada componente fue seleccionado con criterio, no instalado por defecto intentando que se parezca a un entorno profesional.
 
 ---
 
