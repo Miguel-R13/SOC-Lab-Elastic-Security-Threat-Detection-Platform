@@ -1,5 +1,5 @@
 🛡️ Cómo construí un SOC desde cero usando Elasticsearch + Kibana
-![Elastic](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/Capturas/elastic-kibana.png)
+
 📌 Introducción
 
 El objetivo de este proyecto fue diseñar e implementar un SOC (Security Operations Center) funcional desde cero, basado en la Elastic Stack, incorporando capacidades de:
@@ -34,7 +34,7 @@ Aplicación de políticas de seguridad
 Orquestación de telemetría
 Control del ciclo de vida de agentes
 
-![Fleet Server](./Capturas/fleet-server.png)
+![Fleet Server](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/Capturas/fleet-server.png)
 
 🧩 Elastic Agent: se utilizó como sensor principal en endpoints:
 
@@ -44,7 +44,7 @@ Telemetría de seguridad
 Comunicación con Fleet Server
 Aplicación de políticas EDR
 
-![EDR Policy](./Capturas/EDR_Policy.png)
+![Elastic Agent - EDR Policy](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/Capturas/fleet-agent-EDR-policy.png)
 
 
 🖥️ 2. Endpoint Security (EDR)
@@ -76,7 +76,7 @@ Telemetría avanzada del endpoint
 Respuesta ante incidentes
 Soporte forense
 
-![EDR Policy](./Capturas/EDR_Policy.png)
+![EDR Policy](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/Capturas/EDR_Policy.png)
 
 🧪 Vulnerability Management
 
@@ -231,5 +231,5 @@ Observabilidad completa
 
 Todo ello integrado en una arquitectura escalable, modular y orientada a detección avanzada.
 
-![Captura](./Capturas/elastic-kibana.png)
+![Elastic Stack](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/Capturas/elastic-kibana.png)
 
