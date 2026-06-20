@@ -34,6 +34,8 @@ Aplicación de políticas de seguridad
 Orquestación de telemetría
 Control del ciclo de vida de agentes
 
+![Fleet Server](Capturas/fleet-server.png)
+
 🧩 Elastic Agent: se utilizó como sensor principal en endpoints:
 
 Recolección de logs
@@ -72,6 +74,8 @@ Prevención de amenazas
 Telemetría avanzada del endpoint
 Respuesta ante incidentes
 Soporte forense
+
+![EDR Policy](Capturas/EDR_Policy.png)
 
 🧪 Vulnerability Management
 
@@ -225,3 +229,5 @@ Case management (IRIS)
 Observabilidad completa
 
 Todo ello integrado en una arquitectura escalable, modular y orientada a detección avanzada.
+
+![Elastic + Kibana](Capturas/elastic+kibana.png)
