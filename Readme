@@ -2,7 +2,7 @@
 
 📌 Introducción
 
-El objetivo de este proyecto fue diseñar e implementar un SOC (Security Operations Center) funcional desde cero, basado en la Elastic Stack, incorporando capacidades de:
+El objetivo de este proyecto fue diseñar e implementar un SOC (Security Operations Center) funcional desde cero, basado en Elastic Stack, incorporando capacidades de:
 
 SIEM
 EDR
@@ -12,7 +12,7 @@ Machine Learning para detección de comportamiento
 Case Management (IRIS)
 Observabilidad de infraestructura
 
-Todo el entorno fue desplegado en un laboratorio utilizando Docker como base de orquestación de componentes auxiliares.
+Todo el entorno fue desplegado en un laboratorio utilizando Docker.
 
 🏗️ 1. Arquitectura del SOC
 
@@ -23,10 +23,11 @@ Elasticsearch → Motor de indexación y correlación
 Kibana → Visualización, SIEM y análisis
 Fleet Server → Control de agentes
 Elastic Agent → Telemetría y seguridad en endpoints
+
 🔹 Infraestructura de despliegue
 Docker → Despliegue de servicios auxiliares (MISP, IRIS, etc.) y también del propio Elastic + Kibana.
-🧠 Fleet Server (Core de gestión)
 
+🧠 Fleet Server (Core de gestión)
 El Fleet Server actúa como el control del SOC:
 
 Gestión centralizada de Elastic Agents
@@ -45,7 +46,6 @@ Comunicación con Fleet Server
 Aplicación de políticas EDR
 
 ![Elastic Agent - EDR Policy](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/Capturas/fleet-agent-EDR-policy.png)
-
 
 🖥️ 2. Endpoint Security (EDR)
 📜 Política EDR: EDR_Policy
