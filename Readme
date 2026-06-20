@@ -34,7 +34,7 @@ Aplicación de políticas de seguridad
 Orquestación de telemetría
 Control del ciclo de vida de agentes
 
-![Fleet Server](Capturas/fleet-server.png)
+![Fleet Server](./Capturas/fleet-server.png)
 
 🧩 Elastic Agent: se utilizó como sensor principal en endpoints:
 
