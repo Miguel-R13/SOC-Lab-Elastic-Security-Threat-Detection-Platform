@@ -75,7 +75,7 @@ Telemetría avanzada del endpoint
 Respuesta ante incidentes
 Soporte forense
 
-![EDR Policy](Capturas/EDR_Policy.png)
+![EDR Policy](./Capturas/EDR_Policy.png)
 
 🧪 Vulnerability Management
 
@@ -230,4 +230,4 @@ Observabilidad completa
 
 Todo ello integrado en una arquitectura escalable, modular y orientada a detección avanzada.
 
-![Elastic + Kibana](Capturas/elastic+kibana.png)
+![Elastic + Kibana](./Capturas/elastic+kibana.png)
