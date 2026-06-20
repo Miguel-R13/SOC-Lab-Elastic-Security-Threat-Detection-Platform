@@ -35,7 +35,8 @@ Aplicación de políticas de seguridad
 Orquestación de telemetría
 Control del ciclo de vida de agentes
 
-![Fleet Server](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/Capturas/fleet-server.png)
+### 🧠 Fleet Server
+![Fleet Server](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/fleet-server.png)
 
 🧩 Elastic Agent: se utilizó como sensor principal en endpoints:
 
@@ -45,7 +46,8 @@ Telemetría de seguridad
 Comunicación con Fleet Server
 Aplicación de políticas EDR
 
-![Elastic Agent - EDR Policy](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/Capturas/fleet-agent-EDR-policy.png)
+### 🧩 Elastic Agent - EDR Policy
+![Elastic Agent - EDR Policy](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/fleet-agent-EDR-policy.png)
 
 🖥️ 2. Endpoint Security (EDR)
 📜 Política EDR: EDR_Policy
@@ -76,7 +78,8 @@ Telemetría avanzada del endpoint
 Respuesta ante incidentes
 Soporte forense
 
-![EDR Policy](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/Capturas/EDR_Policy.png)
+### 🛡️ EDR Policy
+![EDR Policy](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/EDR_Policy.png)
 
 🧪 Vulnerability Management
 
@@ -166,6 +169,9 @@ Enriquecimiento de alertas
 Sincronización de IOC
 Correlación de incidentes
 
+### 🛡️ Inteligencia de Amenazas: MISP
+![Plataforma MISP](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/misp.png)
+
 🚨 7. Detección y reglas de seguridad
 📊 Elastic Security Rules
 
@@ -232,7 +238,5 @@ Observabilidad completa
 Todo ello integrado en una arquitectura escalable, modular y orientada a detección avanzada.
 
 ### 📊 Panel de Control: Elastic Kibana
-Aquí puedes ver la visualización de los logs recolectados desde nuestros endpoints.
-
 ![Panel de Elastic Kibana](https://raw.githubusercontent.com/Miguel-R13/SOC-Lab-Elastic-Security-Threat-Detection-Platform/main/screenshots/elastic-kibana.png)
 
