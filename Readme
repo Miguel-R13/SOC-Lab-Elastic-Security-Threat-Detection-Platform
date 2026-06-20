@@ -1,5 +1,7 @@
 🛡️ Cómo construí un SOC desde cero usando Elasticsearch + Kibana
 
+![Administración y Servicios](screenshots/EDR_Policy.png)
+
 📌 Introducción
 
 El objetivo de este proyecto fue diseñar e implementar un SOC (Security Operations Center) funcional desde cero, basado en Elastic Stack, incorporando capacidades de:
