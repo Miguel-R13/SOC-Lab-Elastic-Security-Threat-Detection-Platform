@@ -324,6 +324,7 @@ SOC-Lab-Elastic-Security-Threat-Detection-Platform/
 
 ## 🔗 Recursos relacionados
 
+- [Caso Práctico IR: Reverse Shell & Postexplotación detectado con este SOC Lab](https://github.com/Miguel-R13/BlueTeam-Labs-WriteUps/tree/master/03-IR-Respuesta-Incidentes-Elastic)
 - [Informe técnico: análisis de malware y phishing](https://miguel-r13.github.io/)
 - [MITRE ATT&CK Framework](https://attack.mitre.org/)
 - [Elastic Security Documentation](https://www.elastic.co/guide/en/security/current/index.html)
